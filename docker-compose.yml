@@ -1,0 +1,26 @@
+version: '2'
+services:
+  # zookeeper:
+  #   image: wurstmeister/zookeeper
+  #   environment:
+  #     - SERVICE_NAME=zookeeper
+  #     - SERVICE_2181_NAME=zookeeper
+  #   ports:
+  #     - "2181:2181"
+  kafka:
+    image: spotify/kafka
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    environment:
+      - SERVICE_NAME=kafka
+      - SERVICE_9092_NAME=kafka
+      - ADVERTISED_HOST=kafka.service.consul
+      - ADVERTISED_PORT=9092
+
+  ingester:
+    build:
+      context: .
+    entrypoint: ["python", "ingester.py"]
+
+

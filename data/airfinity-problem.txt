@@ -1,0 +1,17 @@
+A new opportunity has arisen in the market for a event analytics company. Its aim is to collect all attendance information from organizers, unfortunately there is not a common format for these. Some organizers have only partial information about people, or some redundant information. Some of these attendance information is published online, while some is sent to us using a variety of formats, but mostly CSV.
+
+Our database of events contains event information. See the file event_db.csv attached.
+
+You will regularly receive attendance information from a group of event brokers, some examples are attached. There are 3 formats to start with. Alpha, Beta and Gamma files will be received once a day, usually at midnight, with an undecided mechanism.
+
+We need a system that is able to ingest Alpha, Beta and Gamma formats, discard duplicated entries and produce a unified view of event attendance (count of people). We also want to have a view on every person, what events they attended and what event categories. 
+
+The output of the system would be a CSV per combination of event and its date, and the content would be every information about attendees that we have (who, site, twitter, etc)
+
+
+Please code this exercise considering that:
+1) new formats may come in, but unlikely
+2) CSV files are likely to be around 15000 lines long
+3) List of events for this prototype will stay below 100
+4) Some level of testing is expected (e.g. unit-tests)
+4) write a README on how to run it

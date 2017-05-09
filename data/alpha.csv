@@ -1,0 +1,14 @@
+eventname,eventdate,who,site
+ProductTank,2/1/17,Francis M,http://abc.com
+Hacker News,5/1/17,Francis M,http://abc.com
+Hacker News,5/2/17,Francis M,http://abc.com
+PyData,5/1/17,Andreas B,http://bcd.com
+PyData,5/1/17,Andreas B,http://bcd.com
+PyData,5/1/17,John S,http://john.com
+PyData,5/1/17,John S,http://johnny.com
+PyData,5/1/17,John T,http://johnt.com
+PyData,5/1/17,Sarah C,
+PyData,5/1/17,BigCorp Ltd,http://bigcorp.com
+PyData,5/1/17,Sarah from BigCorp,http://bigcorp.com
+PyData,5/1/17,Surname F,http://
+PyData,5/1/17,First S,http://

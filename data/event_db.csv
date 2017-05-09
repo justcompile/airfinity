@@ -1,0 +1,6 @@
+eventid,name,category,twitter,date
+1,Product Tank,product,@ptank,2/1/2017
+2,Hacker News,product,@hnews,5/1/2017
+3,PyData,tech,@pydata,5/1/2017
+4,EuroPython,tech,@europython,6/3/2017
+5,DjangoCon,tech,@djangocon,7/12/2017
