@@ -6,8 +6,10 @@ COPY requirements.txt /app
 
 RUN pip install -r /app/requirements.txt
 
-COPY my_events /app
+COPY *.py /app/
+
+COPY my_events /app/my_events/
 
 ENTRYPOINT ["python"]
 
-CMD ["python", "producer.py"]
+CMD ["python", "consumer.py"]

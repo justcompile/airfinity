@@ -1,4 +1,7 @@
+from __future__ import print_function
 import sys
+
+from my_events.config import KAFKA_BROKERS
 
 
 class Console(object):
@@ -17,25 +20,35 @@ class Ingester(object):
 
     @property
     def kafka_client(self):
+        from kafka import KafkaProducer
         if not self._kafka_client:
-            self._kafka_client = Console()
+            self._kafka_client = KafkaProducer(
+                bootstrap_servers=KAFKA_BROKERS
+            )
 
         return self._kafka_client
 
-    def send_data(self, data, **kwargs):
+    def process(self, data, **kwargs):
         raise NotImplementedError
+
+    def remove_duplicates(self, data):
+        return set(data)
 
     def _route_data(self, data_stream):
         try:
-            for line in data_stream:
-                self.kafka_client.send(self.routing_key, line)
+            for line in self.remove_duplicates(data_stream):
+                if line:
+                    self.kafka_client.send(self.routing_key, bytes(line.strip()))
+
+            # block until all async messages are sent
+            self.kafka_client.flush()
 
         except TypeError:
             raise RuntimeError('data_stream is not iterable')
 
 
 class CSVStreamIngester(Ingester):
-    def send_data(self, data, has_headers=False, **kwargs):
+    def process(self, data, has_headers=False, **kwargs):
         if has_headers:
             try:
                 data.next()

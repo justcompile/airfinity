@@ -32,17 +32,28 @@ class IngesterTestCase(unittest.TestCase):
         self.kafka_client_mock.send.assert_called_once_with('my-key', 'hello')
 
     def test_sends_messages_when_stream_is_a_generator(self):
-        data_stream = (i for i in xrange(10))
-        expected_calls = [call('my-key', i) for i in range(10)]
+        data_stream = (str(i) for i in xrange(10))
+        expected_calls = [call('my-key', str(i)) for i in range(10)]
 
         ingester = Ingester('my-key')
         ingester._kafka_client = self.kafka_client_mock
 
         ingester._route_data(data_stream)
-        self.kafka_client_mock.send.assert_has_calls(expected_calls)
+        self.kafka_client_mock.send.assert_has_calls(expected_calls, any_order=True)
+
+    def test_removes_basic_duplicates_from_data_stream(self):
+        data_stream = iter(['1', '2', '3', '2', '1', '1', '4'])
+
+        expected_calls = [call('my-key', '1'), call('my-key', '2'), call('my-key', '3'), call('my-key', '4')]
+
+        ingester = Ingester('my-key')
+        ingester._kafka_client = self.kafka_client_mock
+
+        ingester._route_data(data_stream)
+        self.kafka_client_mock.send.assert_has_calls(expected_calls, any_order=True)
 
     def test_raises_not_implemented(self):
-        self.assertRaises(NotImplementedError, Ingester('my-key').send_data, [])
+        self.assertRaises(NotImplementedError, Ingester('my-key').process, [])
 
 
 class CSVStreamIngesterTestCase(unittest.TestCase):
@@ -52,22 +63,22 @@ class CSVStreamIngesterTestCase(unittest.TestCase):
         self.ingester._route_data = self._route_mock
 
     def test_sends_all_lines_if_has_headers_kwarg_not_supplied(self):
-        data_stream = [i for i in xrange(10)]
-        expected_lines = range(10)
+        data_stream = [str(i) for i in xrange(10)]
+        expected_lines = [str(i) for i in range(10)]
 
-        self.ingester.send_data(data_stream)
+        self.ingester.process(data_stream)
         self.assertEqual(expected_lines, self._route_mock.call_args[0][0])
 
     def test_sends_all_lines_if_has_headers_kwarg_false(self):
-        data_stream = [i for i in xrange(20)]
-        expected_lines = range(20)
+        data_stream = [str(i) for i in xrange(20)]
+        expected_lines = [str(i) for i in range(20)]
 
-        self.ingester.send_data(data_stream, has_headers=False)
+        self.ingester.process(data_stream, has_headers=False)
         self.assertEqual(expected_lines, self._route_mock.call_args[0][0])
 
     def test_sends_all_lines_if_has_headers_kwarg_true(self):
-        data_stream = [i for i in xrange(20)]
-        expected_lines = range(1, 20)
+        data_stream = [str(i) for i in xrange(20)]
+        expected_lines = [str(i) for i in range(1, 20)]
 
-        self.ingester.send_data(data_stream, has_headers=True)
+        self.ingester.process(data_stream, has_headers=True)
         self.assertEqual(expected_lines, self._route_mock.call_args[0][0])

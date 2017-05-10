@@ -18,9 +18,24 @@ services:
       - ADVERTISED_HOST=kafka.service.consul
       - ADVERTISED_PORT=9092
 
+  mongo:
+    image: mongo:3.2
+    ports:
+      - "27017:27017"
+    environment:
+      - SERVICE_NAME=mongodb
+      - SERVICE_27017_NAME=mongodb
+    volumes:
+      - ./data/mongo:/data/db
+
   ingester:
     build:
       context: .
     entrypoint: ["python", "ingester.py"]
+
+  events_importer:
+    build:
+      context: .
+    entrypoint: ["python", "eventdb_importer.py"]
 
 

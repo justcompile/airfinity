@@ -1,4 +1,7 @@
-A new opportunity has arisen in the market for a event analytics company. Its aim is to collect all attendance information from organizers, unfortunately there is not a common format for these. Some organizers have only partial information about people, or some redundant information. Some of these attendance information is published online, while some is sent to us using a variety of formats, but mostly CSV.
+A new opportunity has arisen in the market for a event analytics company.
+Its aim is to collect all attendance information from organizers, unfortunately there is not a common format for these.
+Some organizers have only partial information about people, or some redundant information.
+Some of these attendance information is published online, while some is sent to us using a variety of formats, but mostly CSV.
 
 Our database of events contains event information. See the file event_db.csv attached.
 
