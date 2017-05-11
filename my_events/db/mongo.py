@@ -48,13 +48,6 @@ class Mongo(object):
         except (TypeError, ValueError):
             pass
 
-    def get_or_create_attendee(self, query, document):
-        attendee = self.db.attendees.find_one(query)
-        if not attendee:
-            return self.db.attendees.insert(document)
-
-        return document
-
     def get_or_update_attendee(self, query, fields_to_update):
         return self.db.attendees.find_one_and_update(
             query,
@@ -63,3 +56,9 @@ class Mongo(object):
             projection={'_id': True},
             return_document=ReturnDocument.AFTER
         )
+
+    def save_for_future_processing(self, format_name, message):
+        self.db.failed_messages.insert({
+            'format_name': format_name,
+            'message': message
+        })

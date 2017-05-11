@@ -5,7 +5,7 @@ from my_events.exceptions import EventNotFound
 class BetaConsumer(BaseConsumer):
     """ Processes data in of "beta" format.
 
-    Current implementation does not create Event records which do not already exist
+    Current implementation does not create Event records which do not already exist, but stores it for future processing
 
     Format:
 
@@ -14,6 +14,8 @@ class BetaConsumer(BaseConsumer):
     who: Name of Attendee as string
     person_twitter: Twitter handle for attendee as string prefixed with @
     """
+
+    format_name = 'beta'
 
     def get_event_details(self, message):
         event_twitter, event_month, attendee, attendee_twitter = message.split(',')

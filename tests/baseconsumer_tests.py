@@ -27,6 +27,22 @@ class BaseConsumerTestCase(unittest.TestCase):
         mongo_patcher.start()
         self.addCleanup(mongo_patcher.stop)
 
+        BaseConsumer.format_name = 'test'
+
+    def tearDown(self):
+        BaseConsumer.format_name = None
+
+    def test_raises_exception_if_format_name_property_and_constructor_param_not_set(self):
+        BaseConsumer.format_name = None
+        self.assertRaises(RuntimeError, BaseConsumer, 'a', 'b')
+
+    def test_format_param_overrides_property(self):
+        BaseConsumer.format_name = 'base'
+        expected_result = 'override'
+        actual_result = BaseConsumer('a','b', consumer_format='override').format_name
+
+        self.assertEqual(expected_result, actual_result)
+
     def test_client_property_does_not_call_kafka_constructor_if_set(self):
         consumer = BaseConsumer('my-topic', (i for i in xrange(10)))
 
@@ -106,15 +122,18 @@ class BaseConsumerTestCase(unittest.TestCase):
         self.assertRaises(NotImplementedError, consumer.get_attendee_details, "data")
 
     @patch('__builtin__.print')
-    def test_get_event_details_raising_event_not_found_prints_message_to_stdout(self, mock_print):
-        consumer = BaseConsumer('my-topic', iter([Message('1,2,3,4')]))
+    def test_get_event_details_raising_event_not_found_adds_message_to_db_for_future_processing(self, mock_print):
+        message = Message('1,2,3,4')
+        consumer = BaseConsumer('my-topic', iter([message]), consumer_format='my-test')
 
         consumer.get_event_details = Mock(side_effect=EventNotFound)
 
         consumer.run()
 
         self.mongo.add_attendee_to_event.assert_not_called()
-        mock_print.assert_called_with('Not found')
+        mock_print.assert_called_with('Event not found. Adding to database for future processing')
+
+        self.mongo.save_for_future_processing.assert_called_with('my-test', message.value)
 
     def test_event_and_attendee_added_is_added_to_database(self):
         consumer = BaseConsumer('my-topic', iter([Message('1,2,3,4')]))

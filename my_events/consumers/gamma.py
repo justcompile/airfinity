@@ -6,7 +6,7 @@ from my_events.exceptions import EventNotFound
 class GammaConsumer(BaseConsumer):
     """ Processes data in of "gamma" format.
 
-    Current implementation does not create Event records which do not already exist
+    Current implementation does not create Event records which do not already exist, but stores it for future processing
 
     Format:
 
@@ -15,6 +15,8 @@ class GammaConsumer(BaseConsumer):
     site: Website of attendee
     twitter: Twitter handle for attendee as string prefixed with @
     """
+
+    format_name = 'gamma'
 
     def get_event_details(self, message):
         event_twitter, date, attendee_website, attendee_twitter = message.split(',')

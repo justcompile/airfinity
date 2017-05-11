@@ -3,7 +3,7 @@
 This is Richard Hayes' submission for the Data Engineer exercise. This readme contains information of how to setup & run the application components.
 
 > Disclaimer
-> Due to time constraints, for the occurrences where details of events within a supplied format do not match with those in the Events Database they are skipped.
+> Due to time constraints, for the occurrences where details of events within a supplied format do not match with those in the Events Database they are added to another table with the intension that they can be processed at a later date.
 
 ### Setup Instructions
 

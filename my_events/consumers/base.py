@@ -17,10 +17,18 @@ from my_events.exceptions import EventNotFound
 
 class BaseConsumer(object):
     """Base class for Event Format Consumers"""
-    def __init__(self, topic, consumer=None):
+    format_name = None
+
+    def __init__(self, topic, consumer=None, consumer_format=None):
         self.topic = topic
         self._consumer = consumer
         self._db = None
+
+        if not self.format_name and not consumer_format:
+            raise RuntimeError('Consumer must Implement the `format_name` property')
+
+        if consumer_format:
+            self.format_name = consumer_format
 
     @property
     def client(self):
@@ -51,16 +59,14 @@ class BaseConsumer(object):
             try:
                 self.process_message(message.value)
             except EventNotFound:
-                print('Not found')
-                continue
+                print('Event not found. Adding to database for future processing')
+                self.db.save_for_future_processing(self.format_name, message.value)
 
     def process_message(self, message):
         parsed_message = {
             'event': self.get_event_details(message),
             'attendee': self.get_attendee_details(message)
         }
-
-        print(parsed_message)
 
         self.db.add_attendee_to_event(**parsed_message)
 

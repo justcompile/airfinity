@@ -7,7 +7,7 @@ from my_events.exceptions import EventNotFound
 class AlphaConsumer(BaseConsumer):
     """ Processes data in of "alpha" format.
 
-    Current implementation does not create Event records which do not already exist
+    Current implementation does not create Event records which do not already exist, but stores it for future processing
 
     Expected CSV Format: eventname,eventdate,who,site
 
@@ -16,6 +16,7 @@ class AlphaConsumer(BaseConsumer):
     who: Name of Attendee. May be person, company name or "person from company"
     site: Web Address
     """
+    format_name = 'alpha'
 
     def get_event_details(self, message):
         event_name, date, attendee, site_url = message.split(',')
