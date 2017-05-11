@@ -54,17 +54,21 @@ Next, you will need to seed the Events database
 
 ```
 python eventdb_importer.py < path/to/csv_file_of_events.csv
-```
-Start the consumer daemon, this will create a number of processes which will consume the different data formats from Kafka:
-```
-TBC
-```
+
 Next, we need to ingest the event format data by running the following:
 ```
 python ingester.py alpha < path/to/alphaformat.csv
 python ingester.py beta < path/to/betaformat.csv
 python ingester.py gamma < path/to/gammaformat.csv
 ```
+
+```
+Finally run the consumer daemon, this will create a number of processes which will consume the different data formats from Kafka:
+```
+python consumer.py
+```
+
+Once the console has stopped having data printed out, it is complete, hit ctrl+c to exit.
 
 ### Report Generation
 There are a number of reports generated
