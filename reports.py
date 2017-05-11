@@ -1,11 +1,14 @@
+import os
 from terminaltables import AsciiTable
 from my_events.config import MONGO_CONNECTION_STRING
+from my_events.csv_writer import UnicodeWriter
 from my_events.db import Mongo
 
 
 class ReportBuilder(object):
-    def __init__(self):
+    def __init__(self, report_dir='reports'):
         self.mongo = Mongo(MONGO_CONNECTION_STRING)
+        self.report_dir = report_dir
 
     def summary(self):
         table_data = [["Event", "Date", "Attendees"]]
@@ -50,12 +53,29 @@ class ReportBuilder(object):
                 print 'No attendees'
             print '\n'
 
+
+            self.write_to_file(table_data, '{name}-{date}.csv'.format(
+                name=event['name'].replace(' ', '_'),
+                date=event['date'].strftime('%Y%m%d')
+            ))
+
     def print_header(self, title):
         chars_in_borders = 60
         print '\n{border}\n{title}\n{border}\n'.format(
             border='-'*chars_in_borders,
             title=title
         )
+
+    def write_to_file(self, data, filename):
+        self._ensure_directory_exists(self.report_dir)
+
+        full_path = os.path.join(self.report_dir, filename)
+        with open(full_path, 'wb+') as fp:
+            UnicodeWriter(fp).writerows(data)
+
+    def _ensure_directory_exists(self, directory):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
 
 if __name__ == '__main__':

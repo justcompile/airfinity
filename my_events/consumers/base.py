@@ -1,11 +1,22 @@
+"""
+Consumers handle the parsing and saving of incoming event data from a Kafka Topic.
+
+Each format requires it's own class which at the very least must:
+
+* Be a subclass of `my_events.consumers.base.BaseConsumer`
+* Implement `BaseConsumer.get_event_details`
+* Implement `BaseConsumer.get_attendee_details`
+"""
+
 from __future__ import print_function
 from kafka import KafkaConsumer
-from my_events.config import MONGO_CONNECTION_STRING
+from my_events.config import MONGO_CONNECTION_STRING, KAFKA_BROKERS
 from my_events.db import Mongo
 from my_events.exceptions import EventNotFound
 
 
 class BaseConsumer(object):
+    """Base class for Event Format Consumers"""
     def __init__(self, topic, consumer=None):
         self.topic = topic
         self._consumer = consumer
@@ -15,7 +26,7 @@ class BaseConsumer(object):
     def client(self):
         if self._consumer is None:
             self._consumer = KafkaConsumer(
-                bootstrap_servers=['localhost:9092'],#KAFKA_BROKERS,
+                bootstrap_servers=KAFKA_BROKERS,
                 auto_offset_reset='earliest'
             )
 

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 from csv import DictReader
 import pymongo
@@ -24,7 +25,11 @@ class EventDBImporter(object):
 
         return self._db
 
+    def ensure_indexes(self):
+        self.db.events.create_index([('eventid', pymongo.ASCENDING)], unique=True)
+
     def import_from_csv(self, csv_stream):
+        self.ensure_indexes()
         reader = DictReader(csv_stream)
 
         parsed_events = []
@@ -32,7 +37,13 @@ class EventDBImporter(object):
             event['date'] = parser.parse(event['date'], dayfirst=True)
             parsed_events.append(event)
 
-        self.db.events.insert_many(parsed_events)
+        try:
+            result = self.db.events.insert_many(parsed_events)
+
+            print('Inserted {0} events\n'.format(len(result.inserted_ids)))
+        except pymongo.errors.BulkWriteError as e:
+            for error_detail in e.details['writeErrors']:
+                print(error_detail['errmsg'])
 
 
 def error(msg):

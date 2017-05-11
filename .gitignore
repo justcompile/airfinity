@@ -90,3 +90,5 @@ ENV/
 .idea
 data/mongo
 data/neo4j
+airfinity_dbs
+reports

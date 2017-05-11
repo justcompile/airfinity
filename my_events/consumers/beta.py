@@ -3,12 +3,16 @@ from my_events.exceptions import EventNotFound
 
 
 class BetaConsumer(BaseConsumer):
-    """
+    """ Processes data in of "beta" format.
+
+    Current implementation does not create Event records which do not already exist
+
     Format:
-    event_twitter: string, starts with @
+
+    event_twitter: Twitter handle for Event as string prefixed with @
     event_month: number
-    who: string, may contain spaces
-    person_twitter: string, starts with @
+    who: Name of Attendee as string
+    person_twitter: Twitter handle for attendee as string prefixed with @
     """
 
     def get_event_details(self, message):

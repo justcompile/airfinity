@@ -39,7 +39,7 @@ class BaseConsumerTestCase(unittest.TestCase):
     def test_client_calls_kafka_constructor_if_not_set(self):
         consumer = BaseConsumer('my-topic')
 
-        consumer.client
+        my_client = consumer.client
 
         self.assertEqual(self.kafka.call_count, 1)
 
@@ -50,7 +50,7 @@ class BaseConsumerTestCase(unittest.TestCase):
         my_db = consumer.db
 
         self.mongo.assert_not_called()
-        self.assertEqual(my_db, 'I am a Mongo Object')        
+        self.assertEqual(my_db, 'I am a Mongo Object')
 
     @patch('my_events.consumers.base.Mongo')
     def test_db_property_calls_mongo_constructor_if_not_set(self, mock_constructor):

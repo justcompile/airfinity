@@ -4,12 +4,11 @@ import sys
 from my_events.config import KAFKA_BROKERS
 
 
-class Console(object):
-    def send(self, key, data):
-        sys.stdout.writelines(key+' - '+data)
-
-
 class Ingester(object):
+    """
+    Ingester objects are responsible for reading in data (iterable, streams etc)
+    and send them to a Kafka Topic
+    """
     def __init__(self, data_type):
         self._kafka_client = None
 
@@ -38,7 +37,10 @@ class Ingester(object):
         try:
             for line in self.remove_duplicates(data_stream):
                 if line:
-                    self.kafka_client.send(self.routing_key, bytes(line.strip()))
+                    self.kafka_client.send(
+                        self.routing_key,
+                        bytes(line.strip())
+                    )
 
             # block until all async messages are sent
             self.kafka_client.flush()
@@ -48,6 +50,10 @@ class Ingester(object):
 
 
 class CSVStreamIngester(Ingester):
+    """
+    CSVStreamIngester accepts a stream object container comma-seperated values
+    and sends each row to a kafka topic
+    """
     def process(self, data, has_headers=False, **kwargs):
         if has_headers:
             try:
@@ -65,11 +71,11 @@ def error(msg):
 
 if __name__ == '__main__':
     try:
-        data_type = sys.argv[1:][0]
+        format_type = sys.argv[1:][0]
     except IndexError:
         error('Error: Supply a data format. E.g. python {0} Alpha < file.csv\n'.format(sys.argv[0]))
 
     if sys.stdin.isatty():
         error('Error: Pipe the data into this application: python {0} data_type < file.csv\n'.format(sys.argv[0]))
 
-    CSVStreamIngester(data_type).send_data(sys.stdin, has_headers=True)
+    CSVStreamIngester(format_type).process(sys.stdin, has_headers=True)

@@ -1,12 +1,5 @@
 version: '2'
 services:
-  # zookeeper:
-  #   image: wurstmeister/zookeeper
-  #   environment:
-  #     - SERVICE_NAME=zookeeper
-  #     - SERVICE_2181_NAME=zookeeper
-  #   ports:
-  #     - "2181:2181"
   kafka:
     image: spotify/kafka
     ports:
@@ -26,14 +19,14 @@ services:
       - SERVICE_NAME=mongodb
       - SERVICE_27017_NAME=mongodb
     volumes:
-      - ./data/mongo:/data/db
-
-  neo4j:
-    image: neo4j
-    environment:
-      - NEO4J_AUTH=neo4j/password
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    volumes:
-      - ./data/neo4j/data:/data
+      - ./airfinity_dbs/mongo:/data/db
+  # 
+  # neo4j:
+  #   image: neo4j
+  #   environment:
+  #     - NEO4J_AUTH=neo4j/password
+  #   ports:
+  #     - "7474:7474"
+  #     - "7687:7687"
+  #   volumes:
+  #     - ./airfinity_dbs/neo4j/data:/data

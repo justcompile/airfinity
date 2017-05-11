@@ -43,12 +43,7 @@ class AlphaConsumerTestCase(unittest.TestCase):
             'date': datetime.datetime(1970, 1, 1)
         }
 
-        expected_args = [
-            {'$or': [{'name': 'My Name'}, {'website': 'http://google.com'}]},
-            {'website': 'http://google.com', 'name': 'My Name'}
-        ]
-
-        actual_result = consumer.get_event_details(
+        consumer.get_event_details(
             "my event,1/1/1970,My Name,http://google.com"
         )
 

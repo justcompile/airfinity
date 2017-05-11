@@ -5,8 +5,12 @@ from my_events.exceptions import EventNotFound
 
 
 class AlphaConsumer(BaseConsumer):
-    """
-    Format:
+    """ Processes data in of "alpha" format.
+
+    Current implementation does not create Event records which do not already exist
+
+    Expected CSV Format: eventname,eventdate,who,site
+
     eventname: Event name as string. May contain spaces
     eventdate: String in format d/m/yy.
     who: Name of Attendee. May be person, company name or "person from company"
