@@ -29,7 +29,7 @@ class EventDBImporter(object):
 
         parsed_events = []
         for event in reader:
-            event['date'] = parser.parse(event['date'])
+            event['date'] = parser.parse(event['date'], dayfirst=True)
             parsed_events.append(event)
 
         self.db.events.insert_many(parsed_events)

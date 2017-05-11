@@ -18,4 +18,7 @@ topic = os.environ['TOPIC']
 consumer = consumer_map[os.environ['TOPIC']]
 
 print ('Start consuming: ', topic)
-consumer.run()
+try:
+    consumer.run()
+except KeyboardInterrupt:
+    print('Bye!')

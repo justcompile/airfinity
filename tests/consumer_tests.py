@@ -63,7 +63,7 @@ class BaseConsumerTestCase(unittest.TestCase):
         process_mock = Mock()
         consumer.process_message = process_mock
 
-        expected_calls = [call('1'), call('2'), call('3)]
+        expected_calls = [call('1'), call('2'), call('3')]
 
         consumer.run()
 
