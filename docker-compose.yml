@@ -28,14 +28,12 @@ services:
     volumes:
       - ./data/mongo:/data/db
 
-  ingester:
-    build:
-      context: .
-    entrypoint: ["python", "ingester.py"]
-
-  events_importer:
-    build:
-      context: .
-    entrypoint: ["python", "eventdb_importer.py"]
-
-
+  neo4j:
+    image: neo4j
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./data/neo4j/data:/data

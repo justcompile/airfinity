@@ -30,10 +30,10 @@ class BaseConsumer(object):
         return self._db
 
     def get_event_details(self, message):
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_attendee_details(self, message):
-        raise NotImplemented
+        raise NotImplementedError
 
     def run(self):
         for message in self:
@@ -48,7 +48,8 @@ class BaseConsumer(object):
             'event': self.get_event_details(message),
             'attendee': self.get_attendee_details(message)
         }
-        #print(parsed_message)
+
+        print(parsed_message)
 
         self.db.add_attendee_to_event(**parsed_message)
 
