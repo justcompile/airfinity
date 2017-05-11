@@ -14,57 +14,57 @@ The data stores: Kafka & Neo$j, require Docker to run. If you haven't installed 
 Presumes that python 2.7 is installed, if not install it for your particular OS. It should be installed by default on MacOS.
 
 Create an virtual environment within the application folder so that the libraries do not conflict with system libraries:
-```!python
+```!bash
 virtualenv venv
 ```
 If the above command fails, install it with pip
-```
+```!bash
 pip install virtualenv # may have to run as sudo
 virtualenv venv
 ```
 if you don't have pip, install pip with easy_install
-```
+```!bash
 easy_install pip # may have to run as sudo
 pip install virtualenv # may have to run as sudo
 virtualenv venv
 ```
 
 Once created, activate the virtual environment
-```
+```!bash
 . venv/bin/activate
 ```
 
 #### Installing dependencies
 To install only the libraries required to run the application
-```
+```!bash
 pip install -r requirements.txt
 ```
 To run those required to run the test suite
-```
+```!bash
 pip install -r dev-requirements
 ```
 
 ### Running the Application
 First, you need to start the data stores:
-```
+```!bash
 docker-compose up -d
 ```
 
 Next, you will need to seed the Events database
 
-```
+```!bash
 python eventdb_importer.py < data/event_db.csv
 ```
 Next, we need to ingest the event format data by running the following:
-```
+```!bash
 python ingester.py alpha < data/alpha.csv
 python ingester.py beta < data/beta.csv
 python ingester.py gamma < data/gamma.csv
 ```
 
-```
+
 Finally run the consumer daemon, this will create a number of processes which will consume the different data formats from Kafka:
-```
+```!bash
 python consumer.py
 ```
 
@@ -77,7 +77,7 @@ There are a number of reports generated
 - A report per Event listing all known attendee information
 
 This can be generated with:
-```
+```!bash
 python reports.py
 ```
 This will print out the results to the console. It will also generate a CSV file for each event detailing attendees within the `reports` directory of the application.
@@ -87,13 +87,13 @@ This will print out the results to the console. It will also generate a CSV file
 Whilst I began with a TDD approach, time constraints prevented me from running this through to completion, so whilst there is a good level of test coverage, it could be better.
 
 Assuming you installed the dev-requirements.txt earlier, run the test suite with:
-```
+```!bash
 bash run_tests.sh
 ```
 
 
 ### Clean up
-```
+```!bash
 docker-compose down # stops the Docker containers
 rm -rf airfinity_dbs
 deactivate
