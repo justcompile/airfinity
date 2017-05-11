@@ -10,17 +10,17 @@ services:
       - SERVICE_9092_NAME=kafka
       - ADVERTISED_HOST=kafka.service.consul
       - ADVERTISED_PORT=9092
+  # 
+  # mongo:
+  #   image: mongo:3.2
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     - SERVICE_NAME=mongodb
+  #     - SERVICE_27017_NAME=mongodb
+  #   volumes:
+  #     - ./airfinity_dbs/mongo:/data/db
 
-  mongo:
-    image: mongo:3.2
-    ports:
-      - "27017:27017"
-    environment:
-      - SERVICE_NAME=mongodb
-      - SERVICE_27017_NAME=mongodb
-    volumes:
-      - ./airfinity_dbs/mongo:/data/db
-  
   neo4j:
     image: neo4j
     environment:

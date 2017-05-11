@@ -58,6 +58,7 @@ class BaseConsumer(object):
         for message in self:
             try:
                 self.process_message(message.value)
+                print('Processed record')
             except EventNotFound:
                 print('Event not found. Adding to database for future processing')
                 self.db.save_for_future_processing(self.format_name, message.value)

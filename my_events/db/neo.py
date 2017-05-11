@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 from py2neo import Graph
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
@@ -68,9 +69,12 @@ class Neo4J(object):
         self.db.push(event)
 
     def create_events(self, stream):
+        i = 0
         for event in stream:
             event['date'] = self._parse_datetime(event['date'])
             self.db.create(Event(**event))
+            i += 1
+        print('Inserted {0} events'.format(i))
 
     def ensure_indexes(self):
         pass

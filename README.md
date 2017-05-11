@@ -8,7 +8,7 @@ This is Richard Hayes' submission for the Data Engineer exercise. This readme co
 ### Setup Instructions
 
 #### Docker
-The data stores: Kafka & MongoDB, require Docker to run. If you haven't installed it, get it from [The Docker Website](https://www.docker.com/community-edition).
+The data stores: Kafka & Neo$j, require Docker to run. If you haven't installed it, get it from [The Docker Website](https://www.docker.com/community-edition).
 
 #### Python 2.7
 Presumes that python 2.7 is installed, if not install it for your particular OS. It should be installed by default on MacOS.
@@ -53,13 +53,13 @@ docker-compose up -d
 Next, you will need to seed the Events database
 
 ```
-python eventdb_importer.py < path/to/csv_file_of_events.csv
-
+python eventdb_importer.py < data/event_db.csv
+```
 Next, we need to ingest the event format data by running the following:
 ```
-python ingester.py alpha < path/to/alphaformat.csv
-python ingester.py beta < path/to/betaformat.csv
-python ingester.py gamma < path/to/gammaformat.csv
+python ingester.py alpha < data/alpha.csv
+python ingester.py beta < data/beta.csv
+python ingester.py gamma < data/gamma.csv
 ```
 
 ```
