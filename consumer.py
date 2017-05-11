@@ -26,5 +26,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         for p in processes:
             p.terminate()
-            
+
         print('Bye!')

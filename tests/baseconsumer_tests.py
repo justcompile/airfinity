@@ -18,14 +18,14 @@ class BaseConsumerTestCase(unittest.TestCase):
         self.kafka = kafka_patcher.start()
         self.addCleanup(kafka_patcher.stop)
 
-        self.mongo = Mock()
-        mongo_patcher = patch(
-            'my_events.consumers.base.Mongo',
-            return_value=self.mongo
+        self.neo4j = Mock()
+        neo4j_patcher = patch(
+            'my_events.consumers.base.Neo4J',
+            return_value=self.neo4j
         )
 
-        mongo_patcher.start()
-        self.addCleanup(mongo_patcher.stop)
+        neo4j_patcher.start()
+        self.addCleanup(neo4j_patcher.stop)
 
         BaseConsumer.format_name = 'test'
 
@@ -59,24 +59,24 @@ class BaseConsumerTestCase(unittest.TestCase):
 
         self.assertEqual(self.kafka.call_count, 1)
 
-    def test_db_property_does_not_call_mongo_constructor_if_set(self):
+    def test_db_property_does_not_call_neo4j_constructor_if_set(self):
         consumer = BaseConsumer('my-topic', (i for i in xrange(10)))
-        consumer._db = 'I am a Mongo Object'
+        consumer._db = 'I am a neo4j Object'
 
         my_db = consumer.db
 
-        self.mongo.assert_not_called()
-        self.assertEqual(my_db, 'I am a Mongo Object')
+        self.neo4j.assert_not_called()
+        self.assertEqual(my_db, 'I am a neo4j Object')
 
-    @patch('my_events.consumers.base.Mongo')
-    def test_db_property_calls_mongo_constructor_if_not_set(self, mock_constructor):
+    @patch('my_events.consumers.base.Neo4J')
+    def test_db_property_calls_neo4j_constructor_if_not_set(self, mock_constructor):
         consumer = BaseConsumer('my-topic')
 
-        mock_constructor.return_value = 'I am a Mongo Object'
+        mock_constructor.return_value = 'I am a neo4j Object'
         my_db = consumer.db
 
         mock_constructor.assert_called_once()
-        self.assertEqual(my_db, 'I am a Mongo Object')
+        self.assertEqual(my_db, 'I am a neo4j Object')
 
     def test_can_iterate_over_consumer(self):
         consumer = BaseConsumer('my-topic', (str(i) for i in xrange(10)))
@@ -130,10 +130,10 @@ class BaseConsumerTestCase(unittest.TestCase):
 
         consumer.run()
 
-        self.mongo.add_attendee_to_event.assert_not_called()
+        self.neo4j.add_attendee_to_event.assert_not_called()
         mock_print.assert_called_with('Event not found. Adding to database for future processing')
 
-        self.mongo.save_for_future_processing.assert_called_with('my-test', message.value)
+        self.neo4j.save_for_future_processing.assert_called_with('my-test', message.value)
 
     def test_event_and_attendee_added_is_added_to_database(self):
         consumer = BaseConsumer('my-topic', iter([Message('1,2,3,4')]))
@@ -151,4 +151,4 @@ class BaseConsumerTestCase(unittest.TestCase):
         self.assertEqual(consumer.get_event_details.call_count, 1)
         self.assertEqual(consumer.get_attendee_details.call_count, 1)
 
-        self.mongo.add_attendee_to_event.assert_called_with(**expected_call_args)
+        self.neo4j.add_attendee_to_event.assert_called_with(**expected_call_args)

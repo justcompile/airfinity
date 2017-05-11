@@ -10,8 +10,8 @@ Each format requires it's own class which at the very least must:
 
 from __future__ import print_function
 from kafka import KafkaConsumer
-from my_events.config import MONGO_CONNECTION_STRING, KAFKA_BROKERS
-from my_events.db import Mongo
+from my_events.config import NEO4J_CONNECTION, KAFKA_BROKERS
+from my_events.db import Neo4J
 from my_events.exceptions import EventNotFound
 
 
@@ -44,7 +44,7 @@ class BaseConsumer(object):
     @property
     def db(self):
         if self._db is None:
-            self._db = Mongo(MONGO_CONNECTION_STRING)
+            self._db = Neo4J(NEO4J_CONNECTION)
 
         return self._db
 

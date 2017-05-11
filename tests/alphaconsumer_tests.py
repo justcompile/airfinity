@@ -10,20 +10,20 @@ from my_events.exceptions import EventNotFound
 class AlphaConsumerTestCase(unittest.TestCase):
     def setUp(self):
 
-        self.mongo = Mock()
+        self.neo4j = Mock()
 
-        mongo_patcher = patch(
-            'my_events.consumers.base.Mongo',
-            return_value=self.mongo
+        neo4j_patcher = patch(
+            'my_events.consumers.base.Neo4J',
+            return_value=self.neo4j
         )
 
-        mongo_patcher.start()
-        self.addCleanup(mongo_patcher.stop)
+        neo4j_patcher.start()
+        self.addCleanup(neo4j_patcher.stop)
 
     def test_raises_exception_if_event_does_not_exist(self):
         consumer = AlphaConsumer('topic', iter([]))
 
-        self.mongo.get_event_by_name_and_date.return_value = None
+        self.neo4j.get_event_by_name_and_date.return_value = None
 
         self.assertRaises(
             EventNotFound,
@@ -31,14 +31,14 @@ class AlphaConsumerTestCase(unittest.TestCase):
             "my event,1/1/1970,My Name,http://google.com"
         )
 
-        self.mongo.get_event_by_name_and_date.assert_called_with(
+        self.neo4j.get_event_by_name_and_date.assert_called_with(
             'my event', datetime.datetime(1970, 1, 1)
         )
 
     def test_returns_event_details_if_event_exists(self):
         consumer = AlphaConsumer('topic', iter([]))
 
-        self.mongo.get_event_by_name_and_date.return_value = {
+        self.neo4j.get_event_by_name_and_date.return_value = {
             'name': 'My Name',
             'date': datetime.datetime(1970, 1, 1)
         }
@@ -47,7 +47,7 @@ class AlphaConsumerTestCase(unittest.TestCase):
             "my event,1/1/1970,My Name,http://google.com"
         )
 
-        self.mongo.get_event_by_name_and_date.assert_called_with(
+        self.neo4j.get_event_by_name_and_date.assert_called_with(
             'my event',
             datetime.datetime(1970, 1, 1)
         )
@@ -58,11 +58,11 @@ class AlphaConsumerTestCase(unittest.TestCase):
 
         consumer.get_attendee_details("my event,1/1/1970,My Name,http://google.com")
         expected_args = [
-            {'$or': [{'name': 'My Name'}, {'website': 'http://google.com'}]},
+            {'name': 'My Name', 'website': 'http://google.com'},
             {'website': 'http://google.com', 'name': 'My Name'}
         ]
 
-        self.mongo.get_or_update_attendee.assert_called_with(*expected_args)
+        self.neo4j.get_or_update_attendee.assert_called_with(*expected_args)
 
     def test_get_attendee_returns_name_with_company(self):
         consumer = AlphaConsumer('topic', iter([]))
@@ -70,8 +70,8 @@ class AlphaConsumerTestCase(unittest.TestCase):
         consumer.get_attendee_details("my event,1/1/1970,My Name from Amazon,http://amazon.com")
 
         expected_args = [
-            {'$or': [{'name': 'My Name'}, {'website': 'http://amazon.com'}]},
+            {'name': 'My Name', 'website': 'http://amazon.com'},
             {'website': 'http://amazon.com', 'company': 'Amazon', 'name': 'My Name'}
         ]
 
-        self.mongo.get_or_update_attendee.assert_called_with(*expected_args)
+        self.neo4j.get_or_update_attendee.assert_called_with(*expected_args)

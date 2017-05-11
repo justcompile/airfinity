@@ -1,3 +1,4 @@
+from dateutil import parser
 import pymongo
 from pymongo import ReturnDocument
 
@@ -27,6 +28,12 @@ class Mongo(object):
             'eventid': event['eventid']
         }, {'$addToSet': {'attendees': attendee['_id']}})
 
+    def create_events(self, events):
+        return self.db.events.insert_many(events)
+
+    def ensure_indexes(self):
+        self.db.events.create_index([('eventid', pymongo.ASCENDING)], unique=True)
+
     def get_event_by_name_and_date(self, name, date):
         return self.db.events.find_one({'name': name, 'date': date}, {'_id': 0})
 
@@ -48,9 +55,17 @@ class Mongo(object):
         except (TypeError, ValueError):
             pass
 
+    def get_attendee(self, key, value):
+        return self.db.attendees.find_one({key: value})
+
     def get_or_update_attendee(self, query, fields_to_update):
+
+        or_query = {'$or': [
+            {key: value} for key, value in query.iteritems()
+        ]}
+
         return self.db.attendees.find_one_and_update(
-            query,
+            or_query,
             {'$set': fields_to_update},
             upsert=True,
             projection={'_id': True},

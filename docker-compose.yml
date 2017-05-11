@@ -20,13 +20,13 @@ services:
       - SERVICE_27017_NAME=mongodb
     volumes:
       - ./airfinity_dbs/mongo:/data/db
-  # 
-  # neo4j:
-  #   image: neo4j
-  #   environment:
-  #     - NEO4J_AUTH=neo4j/password
-  #   ports:
-  #     - "7474:7474"
-  #     - "7687:7687"
-  #   volumes:
-  #     - ./airfinity_dbs/neo4j/data:/data
+  
+  neo4j:
+    image: neo4j
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./airfinity_dbs/neo4j/data:/data

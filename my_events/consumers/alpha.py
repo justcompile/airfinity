@@ -24,7 +24,6 @@ class AlphaConsumer(BaseConsumer):
             event_name, parser.parse(date, dayfirst=True)
         )
 
-        # TODO: Create new event if none found
         if not event_record:
             raise EventNotFound
 
@@ -52,7 +51,6 @@ class AlphaConsumer(BaseConsumer):
 
         update_fields['name'] = parsed_attendee['name']
 
-        return self.db.get_or_update_attendee(
-            {'$or': [{'name': parsed_attendee['name']}, {'website': parsed_attendee['website']}]},
-            update_fields
-        )
+        query = {'name': parsed_attendee['name'], 'website': parsed_attendee['website']}
+
+        return self.db.get_or_update_attendee(query, update_fields)

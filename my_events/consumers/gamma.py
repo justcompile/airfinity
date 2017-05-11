@@ -31,8 +31,6 @@ class GammaConsumer(BaseConsumer):
     def get_attendee_details(self, message):
         event_twitter, date, attendee_website, attendee_twitter = message.split(',')
 
-        query = {
-            '$or': [{'website': attendee_website}, {'twitter': attendee_twitter}]
-        }
+        query = {'website': attendee_website, 'twitter': attendee_twitter}
 
         return self.db.get_or_update_attendee(query, {'website': attendee_website, 'twitter': attendee_twitter})

@@ -30,8 +30,6 @@ class BetaConsumer(BaseConsumer):
     def get_attendee_details(self, message):
         event_twitter, event_month, attendee, attendee_twitter = message.split(',')
 
-        query = {
-            '$or': [{'name': attendee}, {'twitter': attendee_twitter}]
-        }
+        query = {'name': attendee, 'twitter': attendee_twitter}
 
         return self.db.get_or_update_attendee(query, {'name': attendee, 'twitter': attendee_twitter})

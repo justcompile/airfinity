@@ -1,22 +1,30 @@
 import os
 from terminaltables import AsciiTable
-from my_events.config import MONGO_CONNECTION_STRING
+from my_events.config import NEO4J_CONNECTION
 from my_events.csv_writer import UnicodeWriter
-from my_events.db import Mongo
+from my_events.db import Neo4J
 
 
 class ReportBuilder(object):
     def __init__(self, report_dir='reports'):
-        self.mongo = Mongo(MONGO_CONNECTION_STRING)
+        self.neo = Neo4J(NEO4J_CONNECTION)
         self.report_dir = report_dir
 
     def summary(self):
         table_data = [["Event", "Date", "Attendees"]]
 
+        data = self.neo.db.data(
+            """
+            MATCH (e:Event)
+            OPTIONAL MATCH (e)<-[:ATTENDED*]-(a:Attendee)
+            WITH e,count(a) as attendees
+            RETURN e.name as name, e.date as date, attendees"""
+        )
+
         table_data.extend(
             [
-                [event['name'], event['date'].strftime('%d %b %Y'), len(event.get('attendees', []))]
-                for event in self.mongo.db.events.find()
+                [event['name'], event['date'], event['attendees']]
+                for event in data
             ]
         )
 
@@ -24,39 +32,53 @@ class ReportBuilder(object):
         print table.table
 
     def attendee_breakdown(self):
-        for attendee in self.mongo.db.attendees.find():
+        data = self.neo.db.data(
+            """
+            MATCH (a:Attendee)-[:ATTENDED*]->(e:Event)
+            with a, collect(e) as events
+            RETURN a.name as name, events
+            """
+        )
+
+        for attendee in data:
             table_data = [[attendee['name'], "Event", "Category"]]
             table_data.extend([
                 ['', event['name'], event['category']]
-                for event in self.mongo.db.events.find({'attendees': attendee['_id']})
+                for event in attendee['events']
             ])
 
             table = AsciiTable(table_data)
             print table.table
             print '\n'
-    # We also want to have a view on every person, what events they attended and what event categories.
 
     def event_tables(self):
-        for event in self.mongo.db.events.find():
-            print '{name}: {date:%d %b %Y}'.format(**event)
-            try:
-                table_data = [["Name", "Twitter", "Website", "Company"]]
+        events = self.neo.db.data(
+            """
+            MATCH (e:Event)
+            OPTIONAL MATCH (e)<-[:ATTENDED*]-(a:Attendee)
+            WITH e,collect(a) as attendees
+            RETURN e.name as name, e.date as date, attendees"""
+        )
 
-                table_data.extend([
-                    [attendee.get('name', ''), attendee.get('twitter', ''), attendee.get('website', ''), attendee.get('company', '')]
-                    for attendee in self.mongo.db.attendees.find({'_id': {'$in': event['attendees']}})
-                ])
 
-                table = AsciiTable(table_data)
-                print table.table
-            except KeyError:
-                print 'No attendees'
+        for event in events:
+            print '{name}: {date}'.format(**event)
+            table_data = [["Name", "Twitter", "Website", "Company"]]
+
+            table_data.extend([
+                [attendee.get('name', ''), attendee.get('twitter', ''), attendee.get('website', ''), attendee.get('company', '')]
+                for attendee in event['attendees']
+            ])
+
+            table = AsciiTable(table_data)
+            print table.table
             print '\n'
 
+            date = '-'.join(reversed(event['date'].split('/')))
 
             self.write_to_file(table_data, '{name}-{date}.csv'.format(
                 name=event['name'].replace(' ', '_'),
-                date=event['date'].strftime('%Y%m%d')
+                date=date
             ))
 
     def print_header(self, title):
