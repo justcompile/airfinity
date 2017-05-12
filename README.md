@@ -4,6 +4,19 @@ This is Richard Hayes' submission for the Data Engineer exercise. This readme co
 
 > Disclaimer
 > Due to time constraints, for the occurrences where details of events within a supplied format do not match with those in the Events Database they are added to another table with the intension that they can be processed at a later date.
+### Description
+The application consists of two main features; Ingesters and Consumers.
+##### Ingesters
+Responsible for reading the data from a source and passing it onto a Kafka topic in order for consumers to process it asynchronously. In this application there is only a `CSVStreamIngester` which reads a csv file from `stdin` and adds each row to the appropirate Kafka topic.
+
+##### Consumers
+Responsible for parsing the data for a given format and mapping attendee data to events. Consumer classes have been build with extensibilty in mind, but only have implementations for the alpha (`AlphaConsumer`), beta (`BetaConsumer`) and gamma (`GammaConsumer`) formats.
+
+##### Data stores
+The application uses `Kafka` to act as the message broker which allows the both the Ingester and Consumer components to be distributed and individually scalable if and when the need arose. 
+It uses `Neo4j` as it's database to store the data in a graph format as the data in question lends itself very much to being stored in a graph format. 
+
+Both of these technologies were new to me and it's been fun & enjoyable to have the challenge of using them.
 
 ### Setup Instructions
 
